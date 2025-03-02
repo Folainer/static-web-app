@@ -29,13 +29,13 @@ const SignupPage = () => {
         ) : (
             <Box
                 sx={{
-                height: "100vh",
+                minHeight: "100vh",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 background: 'center / cover no-repeat url("img/galaxy.jpg")',
                 width: '100%',
-                p: 2,
+                p: 3,
                 boxSizing: 'border-box'
                 }}>
 
