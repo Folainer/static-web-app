@@ -4,7 +4,7 @@ interface worldDataType {
 }
 
 function createChunk(initialValue: number = BlockType.Air) : number[][] {
-    return Array(8).fill(null).map(() => Array(8).fill(initialValue))
+    return Array.from({ length: 8 }, () => Array(8).fill(initialValue));
 }
 
 enum BlockType {
@@ -24,6 +24,9 @@ export default class GameWorld {
 
     generateWorld() {
         this.generateFirstChunk()
+        for (let i = 0; i < 5; i++) {
+            this.addChunk()
+        }
     }
 
     getChunks() {
@@ -33,15 +36,38 @@ export default class GameWorld {
     isBottomColision(x : number, y : number, z : number) {
         const xf = x | 0
         const yf = y | 0
+        const xc = ~(~x - 1)
+        const yc = ~(~y - 1)
         const zf = z | 0
-        const block = this.getBlock(xf, yf)
+        const block1 = this.getBlock(xf, yf)
+        const block2 = this.getBlock(xf, yc)
+        const block3 = this.getBlock(xc, yf)
+        const block4 = this.getBlock(xc, yc)
 
         if (zf >= 0) {
-            if (block === BlockType.Solid && zf <= 1) {
+            if (block1 === BlockType.Solid && zf <= 1) {
               return true;
             }
-            if (block === BlockType.Wall && zf <= 3) {
+            if (block1 === BlockType.Wall && zf <= 3) {
               return true;
+            }
+            if (block2 === BlockType.Solid && zf <= 1) {
+              return true;
+            }
+            if (block2 === BlockType.Wall && zf <= 3) {
+              return true;
+            }
+            if (block3 === BlockType.Solid && zf <= 1) {
+              return true;
+            }
+            if (block3 === BlockType.Wall && zf <= 3) {
+              return true;
+            }
+            if (block4 === BlockType.Solid && zf <= 1) {    
+                return true;
+            }
+            if (block4 === BlockType.Wall && zf <= 3) {
+                return true;
             }
           }
         return false
@@ -65,6 +91,22 @@ export default class GameWorld {
         for (let i = 1; i < 7; i++) {
             for (let j = 1; j < 8; j++) {
                 chunk[i][j] = BlockType.Solid
+            }
+        }
+        this.worldData.push({
+            displacement: this.generatedChunks++,
+            chunk: chunk
+        })
+    }
+
+    addChunk() {
+        if (this.worldData.length > 10) {
+            this.worldData.shift()
+        }
+        const chunk = createChunk(BlockType.Air)
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                chunk[i][j] = Math.random() > 0.8 - 0.5 * Math.exp(-1/5 * this.generatedChunks) ? BlockType.Solid : BlockType.Air
             }
         }
         this.worldData.push({

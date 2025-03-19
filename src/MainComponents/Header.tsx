@@ -7,9 +7,13 @@ import Navigation from './Navigation';
 import { Link } from 'react-router-dom';
 import { deepOrange } from '@mui/material/colors';
 
+import { RootState } from '../Store'
+import { useSelector } from 'react-redux';
+
 const Header : React.FC<{name: string}> = ({name}) => {
     const [open, setOpen] = useState<boolean>(false)
-    const [isAuthorized] = useState<boolean>(true)
+    // const [isAuthorized] = useState<boolean>(true)
+    const currentUser = useSelector((state : RootState) => state.user.currentUser)
 
     const toggleOpen = () => {
         setOpen(!open)
@@ -37,7 +41,7 @@ const Header : React.FC<{name: string}> = ({name}) => {
                                 {name}
                             </Typography>
                         </Box>
-                        {!isAuthorized ? (
+                        {!currentUser ? (
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <Button className='header__button' variant='text' color='inherit' href='/signin'>
                                     <Link className='header__link' to='/signin'>Sign in</Link>
@@ -49,7 +53,7 @@ const Header : React.FC<{name: string}> = ({name}) => {
                         ) : (
                             <Box sx={{ display: "flex", alignItems: "center" }}>
                                 <IconButton aria-label="fingerprint" href='/profile'>
-                                    <Avatar sx={{ bgcolor: deepOrange[500] }}>N</Avatar>
+                                    <Avatar sx={{ bgcolor: deepOrange[500] }}>{currentUser.name.split(' ')[0][0]}</Avatar>
                                 </IconButton>
                             </Box>
                         )} 

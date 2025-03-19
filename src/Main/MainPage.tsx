@@ -2,8 +2,13 @@ import Header from "../MainComponents/Header"
 import { Container, Typography, Button, Box, TableContainer, Table, TableHead, TableCell, TableRow, TableBody, Paper, Avatar } from "@mui/material"
 import './Main.scss'
 import Footer from "../MainComponents/Footer"
+import { useSelector } from "react-redux"
+import { RootState } from "../Store"
 
 const MainPage = () => {
+    const results = useSelector((state: RootState) => state.game.results)
+    // const currentUser = useSelector((state: RootState) => state.user.currentUser)
+
     return (
         <>
             <Header name="Main" />
@@ -38,27 +43,36 @@ const MainPage = () => {
                 <TableContainer sx={{mt: 2}} component={Paper}>
                     <Table sx={{ minWidth: 450}} aria-label="simple table">
                         <TableHead>
-                        <TableRow>
-                            <TableCell sx={{width: '20px'}}></TableCell>
-                            <TableCell align="left">Date</TableCell>
-                            <TableCell align="left">Nickname</TableCell>
-                            <TableCell align="left">Rating</TableCell>
-                        </TableRow>
+                            <TableRow>
+                                <TableCell sx={{width: '20px'}}></TableCell>
+                                <TableCell align="left">Datetime</TableCell>
+                                <TableCell align="left">Nickname</TableCell>
+                                <TableCell align="left">Rating</TableCell>
+                            </TableRow>
                         </TableHead>
                         <TableBody>
-                        {[1,2,3,4].map((row) => (
-                            <TableRow
-                            key={row}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                                <TableCell sx={{width: '20px'}} component="th" scope="row">
-                                    <Avatar>A</Avatar>
-                                </TableCell>
-                                <TableCell align="left">{row}</TableCell>
-                                <TableCell align="left">{row}</TableCell>
-                                <TableCell align="left">{row}</TableCell>
-                            </TableRow>
-                        ))}
+                        { results.length > 0 ? [...results]
+                            .sort((a, b) => +(b.score) - +(a.score))
+                            .map((result) => (
+                                <TableRow
+                                key={result.nickname}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell sx={{width: '20px'}} component="th" scope="row">
+                                        <Avatar>{result.nickname.split(' ')[0][0]}</Avatar>
+                                    </TableCell>
+                                    <TableCell align="left">{result.date}</TableCell>
+                                    <TableCell align="left">{result.nickname}</TableCell>
+                                    <TableCell align="left">{result.score}</TableCell>
+                                </TableRow>
+                            )) : (
+                                <TableRow>
+                                    <TableCell colSpan={4}>
+                                        <Typography align='center'>No game data</Typography>
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        }
                         </TableBody>
                     </Table>
                 </TableContainer>

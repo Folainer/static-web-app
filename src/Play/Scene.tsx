@@ -1,28 +1,41 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { FirstPersonControls } from '@react-three/drei'
 import GameLogic from './GameLogic'
 import Chunk from './Chunk'
 
-const Scene : React.FC<{endHandler : (score : number) => void}> = ({endHandler}) => {
-    const [game] = useState(new GameLogic())
-    game.startGame()
+const Scene : React.FC<{game : GameLogic, endHandler : (score : number) => void, updateScore: (score: number) => void}> = ({game, endHandler, updateScore}) => {
+    const [_, update] = useState(0)
+    const previousScore = useRef(game.score)
+    const displacement = useRef(0)
 
     useFrame((state) => {
         game.updateGame(state, state.clock.getDelta())
         if (!game.isPlaying) {
             endHandler(game.score)
         }
+
+        if (previousScore.current !== game.score) {
+            previousScore.current = game.score
+            updateScore(game.score)
+        }
+
+        // console.log(state.camera.position.z, displacement)
+        if (state.camera.position.z > displacement.current) {
+            displacement.current += 8
+            game.getWorld().addChunk()
+            update((prev) => prev + 1)
+        }
     })
 
     const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === ' ') {
-            console.log(event.key)
             game.jump()
         }
     }
 
     window.addEventListener('keydown', handleKeyDown)
+
 
     return (
     <>
@@ -31,7 +44,7 @@ const Scene : React.FC<{endHandler : (score : number) => void}> = ({endHandler})
         {/* <pointLight position={[10, 10, 10]} decay={0} intensity={Math.PI} /> */}
         <directionalLight position={[4, 100, 4]} intensity={2*Math.PI} />
         {game.getChunks().map((chunk, index) => {
-            return <Chunk key={index} chunk={chunk.chunk} />
+            return <Chunk key={index} displacement={chunk.displacement} chunk={chunk.chunk} />
         })}
         <FirstPersonControls lookSpeed={0.04} movementSpeed={2} />
     </>

@@ -19,6 +19,7 @@ export default class GameLogic {
         this.initialAtitude = this.atitude
         this.flyTime = 0
         this.isGrounded = false
+        this.startGame()
     }
 
     startGame() {
@@ -32,6 +33,8 @@ export default class GameLogic {
             this.flyTime = 100*delta + this.flyTime
         }
 
+        this.score = state.camera.position.z >= 7 ? state.camera.position.z - 7 | 0 : 0
+
         const gotAtitude = this.initialAtitude - this.G * (this.flyTime ** 2) / 2
         // const gotAtitude = this.initialAtitude - 100*this.flyTime
         if (!this.world.isBottomColision(state.camera.position.x, state.camera.position.z, gotAtitude)) {
@@ -43,6 +46,10 @@ export default class GameLogic {
             this.flyTime = 0
         }
         state.camera.position.y = this.atitude
+
+        if (this.atitude < -2) {
+            this.endGame()
+        }
     }
 
     endGame() {
@@ -61,4 +68,9 @@ export default class GameLogic {
     getChunks() {
         return this.world.getChunks()
     }
+
+    getWorld() {
+        return this.world
+    }
+
 }

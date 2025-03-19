@@ -6,22 +6,26 @@ import SignupPage from './Authorization/SignupPage'
 import PlayPage from './Play/PlayPage'
 import ProfilePage from './Profile/Profile'
 import NotFoundPage from './NotFoundPage'
+import { Provider } from 'react-redux'
+import { Store } from './Store'
 
 
 function App() {
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={ <MainPage /> } />
-        <Route path='/signin' element={ <SigninPage /> } />
-        <Route path='/signup' element={ <SignupPage /> } />
-        <Route path='/play' element={ <PlayPage /> } />
-        <Route path='/profile' element={ <ProfilePage /> } />
-        <Route path='/*' element={ <NotFoundPage /> } />
-      </Routes>
-      {/* <ResponsiveDrawer /> */}
-    </BrowserRouter>
+    <Provider store={Store}>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={ <MainPage /> } />
+          <Route path='/signin' element={ <SigninPage /> } />
+          <Route path='/signup' element={ <SignupPage /> } />
+          <Route path='/play' element={ <PlayPage /> } />
+          <Route path='/profile' element={ <ProfilePage /> } />
+          <Route path='/*' element={ <NotFoundPage /> } />
+        </Routes>
+        {/* <ResponsiveDrawer /> */}
+      </BrowserRouter>
+    </Provider>
   )
 }
 

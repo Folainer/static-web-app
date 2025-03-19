@@ -1,31 +1,58 @@
 import Header from "../MainComponents/Header"
-import { Container, Typography, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Card, Dialog, Box, DialogTitle, DialogContent, DialogActions, DialogContentText, Button, TextField } from "@mui/material"
+import { Container, Typography, Card, Box, Button } from "@mui/material"
+// Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, Button, TextField
 import { useState } from "react"
 import Footer from "../MainComponents/Footer"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "../Store"
+import { logout } from "../UserSlice"
 
 
 const ProfilePage = () => {
-    const userData = [
-        {
-            field: 'Name',
-            value: 'Maksym',
-        },
-        {
-            field: 'Birthday',
-            value: '27.06.2004',
-        },
-        {
-            field: 'Gener',
-            value: 'Male',
-        },
-        {
-            field: 'Nickname',
-            value: 'folainer',
-        },
-    ]
+    const userState = useSelector((state: RootState) => state.user) as { currentUser: { name: string, email: string, nickname: string, birthday: string, gender: string } | null }
 
-    const [open, setOpen] = useState<boolean>(false)
+    const currentUser = userState.currentUser
 
+    const userData = []
+
+    if (currentUser) {
+        const tempUserData = [
+            {
+                field: 'Name',
+                value: currentUser.name
+            },
+            {
+                field: 'Email',
+                value: currentUser.email
+            },
+            {
+                field: 'nickname',
+                value: currentUser.nickname
+            },
+            {
+                field: 'birthday',
+                value: currentUser.birthday
+            },
+            {
+                field: 'Gender',
+                value: currentUser.gender
+            }
+        ]
+        tempUserData.map(row => {
+            userData.push(row)
+        })
+    } else {
+        userData.push({
+            field: 'Status',
+            value: 'Unregistered'
+        })
+    }
+
+    const [__, setOpen] = useState<boolean>(false)
+
+    const [_, update] = useState(0)
+
+    const dispatch = useDispatch()
 
     return (
         <>
@@ -68,7 +95,12 @@ const ProfilePage = () => {
                         </Box>
                     )))}
                 </Card>
-                <Typography variant='h5' align='center' sx={{mt: 4}}>Personal game history</Typography>
+                <Button onClick={() => {
+                    dispatch(logout())
+                    update(prev => prev + 1)
+                    }   
+                } variant="contained" fullWidth sx={{mt: 3}}>Exit</Button>
+                {/* <Typography variant='h5' align='center' sx={{mt: 4}}>Personal game history</Typography>
                 <TableContainer sx={{mt: 2}} component={Paper}>
                     <Table sx={{ minWidth: 450}} aria-label="simple table">
                         <TableHead>
@@ -89,10 +121,10 @@ const ProfilePage = () => {
                         ))}
                         </TableBody>
                     </Table>
-                </TableContainer>
+                </TableContainer> */}
                 
             </Container>
-            <Dialog
+            {/* <Dialog
                 open={open}
                 onClose={() => setOpen(false)}
             >
@@ -117,7 +149,7 @@ const ProfilePage = () => {
                 <DialogActions>
                     <Button onClick={() => setOpen(false)}>Close</Button>
                 </DialogActions>
-            </Dialog>
+            </Dialog> */}
             <Footer />
         </>
     )
